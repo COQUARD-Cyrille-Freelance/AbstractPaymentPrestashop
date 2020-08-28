@@ -1,0 +1,25 @@
+{
+    "name": "coquardcyr/abstract-payment-prestashop",
+    "description": "An asbract layer for implementing payment faster",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "COQUARD Cyrille",
+            "email": "coquardcyr@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "AbstractPaymentPrestashop\\": "src/"
+        },
+        "classmap": [
+        ],
+        "exclude-from-classmap": []
+    },
+    "config": {
+        "preferred-install": "dist",
+        "prepend-autoloader": false
+    }
+}
