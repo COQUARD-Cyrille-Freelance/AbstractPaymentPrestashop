@@ -4,7 +4,7 @@
 namespace AbstractPaymentPrestashop\Proxies\Contracts;
 
 
-interface ResponseResponsePaymentProxyInterface
+interface ResponseRequestPaymentProxyInterface
 {
     public function getIdTransaction();
 
