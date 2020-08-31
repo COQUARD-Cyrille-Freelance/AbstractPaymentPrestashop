@@ -26,7 +26,7 @@ abstract class AbstractTransactionService extends AbstractService
         return $transaction->trx_state === $status;
     }
 
-    public abstract function createTransaction($order, $currency, $amount, $shipping, $idTransaction);
+    public abstract function createTransaction($order, $currency, $amount, $shipping, $idTransaction, array $customFields = []);
 
     public function changeStatus(AbstractTransaction $transaction, string $status)
     {

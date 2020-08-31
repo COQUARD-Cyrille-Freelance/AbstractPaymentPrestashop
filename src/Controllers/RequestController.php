@@ -3,7 +3,9 @@
 
 namespace AbstractPaymentPrestashop\Controllers;
 
-
+use PrestaShop\PrestaShop\Adapter\Entity\Tools;
+use PrestaShop\PrestaShop\Adapter\Entity\Context;
+use PrestaShop\PrestaShop\Adapter\Entity\Configuration;
 use AbstractPaymentPrestashop\Exceptions\AbstractPaymentException;
 
 abstract class RequestController extends AbstractPaymentController
@@ -32,7 +34,7 @@ abstract class RequestController extends AbstractPaymentController
         $amount = $this->orderService->getAmount($order, $currency);
         $shipping = $this->orderService->getShippingAmount($order, $currency);
         if (!empty($answer)) {
-            $this->transactionService->createTransaction($order, $currency, $amount, $shipping, $answer->getIdTransaction());
+            $this->transactionService->createTransaction($order, $currency, $amount, $shipping, $answer->getIdTransaction(), $answer->getCustomFields());
             Tools::redirect($answer->getUrl());
         }
         Tools::redirect(Context::getContext()->link->getModuleLink($this->module->name, 'error', array(), true));

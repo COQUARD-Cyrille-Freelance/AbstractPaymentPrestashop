@@ -7,7 +7,7 @@ namespace AbstractPaymentPrestashop\Currencies;
 use AbstractPaymentPrestashop\Exceptions\AbstractPaymentException;
 use PrestaShop\PrestaShop\Adapter\Entity\Currency;
 
-class AbstractCurrency
+abstract class AbstractCurrency
 {
     protected $currencyScales = [];
 

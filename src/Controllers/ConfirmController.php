@@ -6,6 +6,8 @@ namespace AbstractPaymentPrestashop\Controllers;
 
 use AbstractPaymentPrestashop\Exceptions\AbstractPaymentException;
 use Exception;
+use PrestaShop\PrestaShop\Adapter\Entity\Tools;
+use PrestaShop\PrestaShop\Adapter\Entity\Context;
 
 abstract class ConfirmController extends AbstractPaymentController
 {

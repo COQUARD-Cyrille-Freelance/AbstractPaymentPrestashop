@@ -3,6 +3,8 @@
 
 namespace AbstractPaymentPrestashop\Controllers;
 
+use PrestaShop\PrestaShop\Adapter\Entity\Tools;
+use PrestaShop\PrestaShop\Adapter\Entity\Context;
 
 abstract class CancelController extends AbstractPaymentController
 {
