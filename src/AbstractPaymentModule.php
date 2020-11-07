@@ -4,6 +4,7 @@
 namespace AbstractPaymentPrestashop;
 
 use AbstractPaymentPrestashop\Status\Contracts\OrderStatusInterface;
+use Context;
 use Exception;
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use PrestaShop\PrestaShop\Adapter\Entity\Validate;
