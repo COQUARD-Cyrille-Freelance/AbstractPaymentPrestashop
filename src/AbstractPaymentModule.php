@@ -6,6 +6,7 @@ namespace AbstractPaymentPrestashop;
 use AbstractPaymentPrestashop\Status\Contracts\OrderStatusInterface;
 use Context;
 use Exception;
+use HelperForm;
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use PrestaShop\PrestaShop\Adapter\Entity\Validate;
 use PrestaShop\PrestaShop\Adapter\Entity\Configuration;
@@ -177,7 +178,7 @@ abstract class AbstractPaymentModule extends PaymentModule
         $values = array();
         $configKeys = $this->getConfigKeys();
         foreach($configKeys as $key) {
-            $values[$key] = Configuration::get($this->getConfigPrefix() . $key);
+            $values[$this->getConfigPrefix() . $key] = Configuration::get($this->getConfigPrefix() . $key);
         }
         return $values;
     }
