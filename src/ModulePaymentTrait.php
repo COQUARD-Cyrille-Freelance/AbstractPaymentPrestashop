@@ -17,12 +17,12 @@ use Module;
 use Tools;
 use PrestaShop\PrestaShop\Adapter\Entity\PaymentModule;
 
-abstract class AbstractPaymentModule extends PaymentModule
+trait ModulePaymentTrait
 {
     protected $orderStatus;
     protected $context;
 
-    public function __construct(OrderStatusInterface $orderStatus, Context $context) {
+    public function setUp(OrderStatusInterface $orderStatus, Context $context) {
         $this->context = $context;
         $this->orderStatus = $orderStatus;
         $this->tab = 'payments_gateways';
@@ -32,7 +32,6 @@ abstract class AbstractPaymentModule extends PaymentModule
         $this->currencies_mode = 'checkbox';
         $this->module_link = $this->context->link->getAdminLink('AdminModules', true) . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
         $this->confirmUninstall = $this->l('Are you sure you want to delete your details?');
-        parent::__construct();
     }
 
     public function install(){
