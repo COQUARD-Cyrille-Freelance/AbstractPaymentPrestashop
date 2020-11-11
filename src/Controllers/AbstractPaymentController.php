@@ -25,23 +25,14 @@ abstract class AbstractPaymentController  extends ModuleFrontController
     protected $orderStatus;
     protected $transactionStatus;
 
-    /**
-     * AbstractPaymentController constructor.
-     * @param $transactionService
-     * @param $orderService
-     * @param $paymentProxy
-     */
-    public function __construct(AbstractTransactionService $transactionService, AbstractOrderService $orderService, PaymentProxyInterface $paymentProxy, OrderStatusInterface $orderStatus, TransactionStatusInterface $transactionStatus)
-    {
+    public function callInitContent(AbstractTransactionService $transactionService, AbstractOrderService $orderService, PaymentProxyInterface $paymentProxy, OrderStatusInterface $orderStatus, TransactionStatusInterface $transactionStatus) {
+        parent::initContent();
+
         $this->transactionService = $transactionService;
         $this->orderService = $orderService;
         $this->paymentProxy = $paymentProxy;
         $this->orderStatus = $orderStatus;
         $this->transactionStatus = $transactionStatus;
-    }
-
-    public function initContent() {
-        parent::initContent();
 
         if (! $this->isActive()) {
             Tools::redirect(Context::getContext()->link->getModuleLink($this->module->name, 'error', [
