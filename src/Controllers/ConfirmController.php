@@ -5,6 +5,7 @@ namespace AbstractPaymentPrestashop\Controllers;
 
 
 use AbstractPaymentPrestashop\Exceptions\AbstractPaymentException;
+use AbstractPaymentPrestashop\Models\AbstractTransaction;
 use AbstractPaymentPrestashop\Proxies\Contracts\PaymentProxyInterface;
 use AbstractPaymentPrestashop\Services\AbstractOrderService;
 use AbstractPaymentPrestashop\Services\AbstractTransactionService;
@@ -18,9 +19,9 @@ abstract class ConfirmController extends AbstractPaymentController
 {
     protected $transactionIdParam = 'transactionId';
 
-    public function callInitContent(AbstractTransactionService $transactionService, AbstractOrderService $orderService, PaymentProxyInterface $paymentProxy, OrderStatusInterface $orderStatus, TransactionStatusInterface $transactionStatus)
+    public function callInitContent(AbstractTransaction $transaction, AbstractTransactionService $transactionService, AbstractOrderService $orderService, PaymentProxyInterface $paymentProxy, OrderStatusInterface $orderStatus, TransactionStatusInterface $transactionStatus)
     {
-        parent::callInitContent($transactionService, $orderService, $paymentProxy, $orderStatus, $transactionStatus);
+        parent::callInitContent($transaction, $transactionService, $orderService, $paymentProxy, $orderStatus, $transactionStatus);
         $transaction = $this->verifyStatus($this->transactionStatus->getRequested());
         $order = $this->getOrder();
         $currency = $this->getOrderCurrency($order);

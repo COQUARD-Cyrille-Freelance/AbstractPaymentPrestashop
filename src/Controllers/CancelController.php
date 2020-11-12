@@ -3,6 +3,7 @@
 
 namespace AbstractPaymentPrestashop\Controllers;
 
+use AbstractPaymentPrestashop\Models\AbstractTransaction;
 use AbstractPaymentPrestashop\Proxies\Contracts\PaymentProxyInterface;
 use AbstractPaymentPrestashop\Services\AbstractOrderService;
 use AbstractPaymentPrestashop\Services\AbstractTransactionService;
@@ -13,9 +14,9 @@ use PrestaShop\PrestaShop\Adapter\Entity\Context;
 
 abstract class CancelController extends AbstractPaymentController
 {
-    public function callInitContent(AbstractTransactionService $transactionService, AbstractOrderService $orderService, PaymentProxyInterface $paymentProxy, OrderStatusInterface $orderStatus, TransactionStatusInterface $transactionStatus)
+    public function callInitContent(AbstractTransaction $transaction, AbstractTransactionService $transactionService, AbstractOrderService $orderService, PaymentProxyInterface $paymentProxy, OrderStatusInterface $orderStatus, TransactionStatusInterface $transactionStatus)
     {
-        parent::callInitContent($transactionService, $orderService, $paymentProxy, $orderStatus, $transactionStatus);
+        parent::callInitContent($transaction, $transactionService, $orderService, $paymentProxy, $orderStatus, $transactionStatus);
         $transaction = $this->verifyStatus($this->transactionStatus->getRequested());
         $order = $this->getOrder();
         $this->transactionService->changeStatus($transaction,$this->transactionStatus->getCanceled());

@@ -24,10 +24,10 @@ abstract class AbstractPaymentController  extends ModuleFrontController
     protected $paymentProxy;
     protected $orderStatus;
     protected $transactionStatus;
-
-    public function callInitContent(AbstractTransactionService $transactionService, AbstractOrderService $orderService, PaymentProxyInterface $paymentProxy, OrderStatusInterface $orderStatus, TransactionStatusInterface $transactionStatus) {
+    protected $transaction;
+    public function callInitContent(AbstractTransaction $transaction, AbstractTransactionService $transactionService, AbstractOrderService $orderService, PaymentProxyInterface $paymentProxy, OrderStatusInterface $orderStatus, TransactionStatusInterface $transactionStatus) {
         parent::initContent();
-
+        $this->transaction = $transaction;
         $this->transactionService = $transactionService;
         $this->orderService = $orderService;
         $this->paymentProxy = $paymentProxy;

@@ -3,6 +3,7 @@
 
 namespace AbstractPaymentPrestashop\Controllers;
 
+use AbstractPaymentPrestashop\Models\AbstractTransaction;
 use AbstractPaymentPrestashop\Proxies\Contracts\PaymentProxyInterface;
 use AbstractPaymentPrestashop\Services\AbstractOrderService;
 use AbstractPaymentPrestashop\Services\AbstractTransactionService;
@@ -15,9 +16,9 @@ use AbstractPaymentPrestashop\Exceptions\AbstractPaymentException;
 
 abstract class RequestController extends AbstractPaymentController
 {
-    public function callInitContent(AbstractTransactionService $transactionService, AbstractOrderService $orderService, PaymentProxyInterface $paymentProxy, OrderStatusInterface $orderStatus, TransactionStatusInterface $transactionStatus)
+    public function callInitContent(AbstractTransaction $transaction, AbstractTransactionService $transactionService, AbstractOrderService $orderService, PaymentProxyInterface $paymentProxy, OrderStatusInterface $orderStatus, TransactionStatusInterface $transactionStatus)
     {
-        parent::callInitContent($transactionService, $orderService, $paymentProxy, $orderStatus, $transactionStatus);
+        parent::callInitContent($transaction, $transactionService, $orderService, $paymentProxy, $orderStatus, $transactionStatus);
         $cart = Context::getContext()->cart;
         try {
             $order = $this->orderService->createOrder($cart);
