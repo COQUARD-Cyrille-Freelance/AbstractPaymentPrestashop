@@ -18,7 +18,7 @@ abstract class AbstractTransactionService extends AbstractService
 
     public function getTransaction(bool $orderId): AbstractTransaction
     {
-        return AbstractTransaction::getLatestByOrderId($orderId);
+        return $this->transaction->getLatestByOrderId($orderId);
     }
 
     public function verifyTransaction(AbstractTransaction $transaction, $status): bool

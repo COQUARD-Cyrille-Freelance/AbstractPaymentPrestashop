@@ -20,7 +20,7 @@ abstract class AbstractCurrency
      */
     public function standardizeAmount($amount, $currency) {
         $upperCurrencyCode = strtoupper($currency);
-        if(!in_array($upperCurrencyCode, $this->currencyScales))
+        if(!in_array($upperCurrencyCode, array_keys($this->currencyScales)))
             throw new AbstractPaymentException();
 
         $scale = $this->currencyScales[$upperCurrencyCode];

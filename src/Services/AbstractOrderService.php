@@ -122,7 +122,7 @@ abstract class AbstractOrderService extends AbstractService
      * @return Order
      * @throws AbstractPaymentException
      */
-    public function createOrder(Card $cart): Order
+    public function createOrder(Cart $cart): Order
     {
         if (! $cart instanceof Cart || empty ($cart->id))
         {

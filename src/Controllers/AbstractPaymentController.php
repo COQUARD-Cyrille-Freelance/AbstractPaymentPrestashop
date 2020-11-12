@@ -98,7 +98,7 @@ abstract class AbstractPaymentController  extends ModuleFrontController
             $currency = $this->orderService->getOrderCurrency($order);
         } catch (AbstractPaymentException $e) {
             Tools::redirect(Context::getContext()->link->getModuleLink($this->module->name, 'error', [
-                'message' => $this->module->l('The currency is not supported by LinePay')
+                'message' => $this->module->l("The currency is not supported by {$this->module->name}.")
             ], true));
         }
         return $currency;

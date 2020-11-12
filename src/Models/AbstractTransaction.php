@@ -9,7 +9,7 @@ use PrestaShop\PrestaShop\Adapter\Entity\ObjectModel;
 
 abstract class AbstractTransaction extends ObjectModel
 {
-    protected static $table;
+    protected static $tableName;
     protected static $primaryKey;
     public $id;
     public $order_id;
@@ -33,7 +33,7 @@ abstract class AbstractTransaction extends ObjectModel
     {
         $query = new DbQuery();
         $query->select('*');
-        $query->from(self::$table);
+        $query->from(static::$tableName);
         $query->where('order_id = ' . ((int) $orderId));
 
         if (!empty ($orderStateName))
@@ -48,7 +48,7 @@ abstract class AbstractTransaction extends ObjectModel
     {
         $instances = array();
         foreach($dataArr as $instance)
-            array_push($instances, new self($instance[self::$primaryKey));
+            array_push($instances, new self($instance[static::$primaryKey]));
         return array_pop($instances);
     }
 }
