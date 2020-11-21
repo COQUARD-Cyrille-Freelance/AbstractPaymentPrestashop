@@ -9,7 +9,7 @@ use AbstractPaymentPrestashop\Models\AbstractTransaction;
 interface PaymentProxyInterface
 {
 
-    public function confirm(AbstractTransaction $transaction, $order, $currency, $amount);
+    public function confirm(AbstractTransaction $transaction, $order, $currency, $amount): ResponseConfirmPaymentProxyInterface;
 
     public function refund($transactionId, $amount);
 

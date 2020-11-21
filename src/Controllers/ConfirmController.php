@@ -27,7 +27,7 @@ abstract class ConfirmController extends AbstractPaymentController
         $currency = $this->getOrderCurrency($order);
         $amount = $this->orderService->getAmount($order, $currency);
         try {
-            $amountConfirm = $this->paymentProxy->confirm($transaction, $order, $currency, $amount);
+            $responseConfirm = $this->paymentProxy->confirm($transaction, $order, $currency, $amount);
         }catch (AbstractPaymentException $e) {
             $this->transactionService->changeStatus($transaction, $this->transactionStatus->getFailure());
             $this->orderService->changeStatus($order, $this->orderStatus->getPaymentError());
@@ -35,8 +35,9 @@ abstract class ConfirmController extends AbstractPaymentController
                 'message' => $this->module->l('The payment failed')
             ], true));
         }
-        if(((float) $amount) === $amountConfirm) {
+        if(((float) $amount) === $responseConfirm->getAmount()) {
             $this->transactionService->changeStatus($transaction, $this->transactionStatus->getConfirmed());
+            $this->transactionService->addRefundInfos($transaction, $responseConfirm->getAmount(), $responseConfirm->getCustomFields());
             $this->orderService->changeStatus($order, $this->orderStatus->getPaymentAccepted());
             $redirectInfos = $this->orderService->createRedirectInfos($order);
             Tools::redirect(Context::getContext()->link->getPageLink('order-confirmation', true, null, $redirectInfos));

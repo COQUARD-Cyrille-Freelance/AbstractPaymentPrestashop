@@ -44,11 +44,11 @@ abstract class AbstractTransaction extends ObjectModel
         return self::createInstance(Db::getInstance()->executeS($query));
     }
 
-    private static function createInstance($dataArr)
+    protected static function createInstance($dataArr)
     {
         $instances = array();
         foreach($dataArr as $instance)
-            array_push($instances, new self($instance[static::$primaryKey]));
+            array_push($instances, new static($instance[static::$primaryKey]));
         return array_pop($instances);
     }
 }

@@ -72,7 +72,7 @@ abstract class AbstractPaymentController  extends ModuleFrontController
     }
 
     protected function verifyStatus($status): AbstractTransaction {
-        $orderId = Tools::getValue($this->orderIdParam, false);
+        $orderId = $this->getOrderID();
         $transaction = $this->transactionService->getTransaction($orderId);
         if(!$this->transactionService->verifyTransaction($transaction, $status))
             Tools::redirect(Context::getContext()->link->getModuleLink($this->module->name, 'error', [
@@ -81,8 +81,12 @@ abstract class AbstractPaymentController  extends ModuleFrontController
         return $transaction;
     }
 
+    public function getOrderID() {
+        return Tools::getValue($this->orderIdParam, false);
+    }
+
     protected function getOrder() {
-        $orderId = Tools::getValue($this->orderIdParam, false);
+        $orderId = $this->getOrderID();
         try {
             $order = $this->orderService->getOrder($orderId);
         } catch (Exception $e) {

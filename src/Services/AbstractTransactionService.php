@@ -9,6 +9,11 @@ use AbstractPaymentPrestashop\Models\AbstractTransaction;
 abstract class AbstractTransactionService extends AbstractService
 {
 
+    /**
+     * Restore the cart to its old state before the transaction
+     * @param bool $transaction transaction to revert
+     * @return bool success from the revert
+     */
     public function restoreCart(bool $transaction): bool
     {
         $trxState = $transaction->trx_state;
@@ -16,7 +21,12 @@ abstract class AbstractTransactionService extends AbstractService
         return !(empty ($transaction) || $result);
     }
 
-    public function getTransaction(bool $orderId): AbstractTransaction
+    /**
+     * Get the transaction linked to the order id
+     * @param int $orderId order id from the transaction
+     * @return AbstractTransaction transaction found
+     */
+    public function getTransaction(int $orderId): AbstractTransaction
     {
         return $this->transaction->getLatestByOrderId($orderId);
     }
@@ -34,7 +44,7 @@ abstract class AbstractTransactionService extends AbstractService
         $transaction->update();
     }
 
-    public abstract function addRefundInfos($transaction, $result, $amount, $shipping);
+    public abstract function addRefundInfos($transaction, $amount, array $custom = []);
 
     public abstract function isTotallyRefund($transaction);
 
