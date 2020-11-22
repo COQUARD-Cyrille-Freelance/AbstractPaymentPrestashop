@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "CoquardCyrilleFreelance\\CoquardCyrilleFreelance\AbstractPaymentPrestashop\\": "src/"
+            "CoquardCyrilleFreelance\\AbstractPaymentPrestashop\\": "src/"
         },
         "classmap": [
         ],
