@@ -1,28 +1,40 @@
 <?php
+/**
+* Copyright 2020 COQUARD Cyrille
+*
+* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+*
+* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+*
+* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+*
+* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
+namespace CoquardCyrilleFreelance\AbstractPaymentPrestashop;
 
-namespace AbstractPaymentPrestashop;
-
-use AbstractPaymentPrestashop\Status\Contracts\OrderStatusInterface;
+use CoquardCyrilleFreelance\AbstractPaymentPrestashop\Status\Contracts\OrderStatusInterface;
 use Context;
 use Exception;
 use HelperForm;
-use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
-use PrestaShop\PrestaShop\Adapter\Entity\Validate;
-use PrestaShop\PrestaShop\Adapter\Entity\Configuration;
-use OrderState;
 use Language;
 use Media;
 use Module;
+use OrderState;
+use PrestaShop\PrestaShop\Adapter\Entity\Configuration;
+use PrestaShop\PrestaShop\Adapter\Entity\Validate;
+use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 use Tools;
-use PrestaShop\PrestaShop\Adapter\Entity\PaymentModule;
 
 trait ModulePaymentTrait
 {
     protected $orderStatus;
     protected $context;
 
-    public function setUp(OrderStatusInterface $orderStatus, Context $context) {
+    public function setUp(OrderStatusInterface $orderStatus, Context $context)
+    {
         $this->context = $context;
         $this->orderStatus = $orderStatus;
         $this->tab = 'payments_gateways';
@@ -31,38 +43,48 @@ trait ModulePaymentTrait
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
         $this->module_link = $this->context->link->getAdminLink('AdminModules', true) . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
-        $this->confirmUninstall = $this->l('Are you sure you want to delete your details?');
+        $this->confirmUninstall = $this->trans('Are you sure you want to delete your details?', [], 'Modules.Scbpayment.Description');
     }
 
-    public function install(){
+    public function install()
+    {
         // Install default
-        if (!parent::install() || ! $this->installSQL() || ! $this->registrationHook() || ! $this->createConfigKey() || !$this->installStates()) {
+        if (!parent::install() || !$this->installSQL() || !$this->registrationHook() || !$this->createConfigKey() || !$this->installStates()) {
             return false;
         }
+
         return true;
     }
 
-    public function uninstall(){
-        if(! $this->uninstallSQL() || ! $this->deleteConfigKey() || !parent::uninstall())
+    public function uninstall()
+    {
+        if (!$this->uninstallSQL() || !$this->deleteConfigKey() || !parent::uninstall()) {
             return false;
+        }
+
         return true;
     }
 
-    protected abstract function installSQL();
+    abstract protected function installSQL();
 
-    protected abstract function uninstallSQL();
+    abstract protected function uninstallSQL();
 
     /**
      * [registrationHook description]
+     *
      * @return [type] [description]
      */
-    protected function registrationHook() {
-        if (! $this->registerHook($this->getHooknames()))
+    protected function registrationHook()
+    {
+        if (!$this->registerHook($this->getHooknames())) {
             return false;
+        }
+
         return true;
     }
 
-    protected function getHooknames() {
+    protected function getHooknames()
+    {
         return [
             'paymentOptions',
             'paymentReturn',
@@ -71,6 +93,13 @@ trait ModulePaymentTrait
         ];
     }
 
+    /**
+     * Returns the translation domain from the module
+     *
+     * @return string translation domain from the module
+     */
+    abstract protected function getModuleTranslationDomain(): string;
+
     protected function createConfigKey()
     {
         foreach ($this->getConfigKeys() as $key) {
@@ -78,10 +107,12 @@ trait ModulePaymentTrait
                 return false;
             }
         }
+
         return true;
     }
 
-    protected function getConfigKeys() {
+    protected function getConfigKeys()
+    {
         return [
             'CHANNEL_ID',
             'CHANNEL_SECRET_KEY',
@@ -91,12 +122,14 @@ trait ModulePaymentTrait
         ];
     }
 
-    public abstract function getConfigPrefix();
+    abstract public function getConfigPrefix();
 
     /**
      * Delete config keys of the project
-     * @param	string $query
-     * @return	boolean
+     *
+     * @param string $query
+     *
+     * @return bool
      */
     protected function deleteConfigKey()
     {
@@ -105,24 +138,34 @@ trait ModulePaymentTrait
                 return false;
             }
         }
+
         return true;
     }
 
-    protected function installStates(){
-        try{
-            foreach ($this->orderStatus->listStates() as $state => $infos)
+    /**
+     * Install all states
+     *
+     * @return bool success
+     */
+    protected function installStates()
+    {
+        try {
+            foreach ($this->orderStatus->listStates() as $state => $infos) {
                 $this->createState($state, $infos['description'], $infos['color']);
-        }catch (Exception $e) {
+            }
+        } catch (Exception $e) {
             return false;
         }
+
         return true;
     }
 
-    protected function createState($key, $description, $color, $send_email = false, $hidden = false, $delivery = false, $loggable = false, $invoice = false) {
+    protected function createState($key, $description, $color, $send_email = false, $hidden = false, $delivery = false, $loggable = false, $invoice = false)
+    {
         if (!Configuration::get($key)
             || !Validate::isLoadedObject(new OrderState(Configuration::get($key)))) {
             $order_state = new OrderState();
-            $order_state->name = array();
+            $order_state->name = [];
             foreach (Language::getLanguages() as $language) {
                 if (in_array(Tools::strtolower($language['iso_code']), array_keys($description))) {
                     $order_state->name[$language['id_lang']] = $description[Tools::strtolower($language['iso_code'])];
@@ -141,7 +184,8 @@ trait ModulePaymentTrait
         }
     }
 
-    public function getContent() {
+    public function getContent()
+    {
         $this->collectSubmitedInfos();
         $helper = new HelperForm();
         $helper->show_toolbar = false;
@@ -153,129 +197,131 @@ trait ModulePaymentTrait
         $helper->submit_action = 'submit';
 
         $helper->token = Tools::getAdminTokenLite('AdminModules');
-        $helper->tpl_vars = array(
+        $helper->tpl_vars = [
             'fields_value' => $this->getValues(),
             'languages' => Context::getContext()->controller->getLanguages(),
-            'id_language' => Context::getContext()->language->id
-        );
+            'id_language' => Context::getContext()->language->id,
+        ];
 
-        return $helper->generateForm(array(
-            $this->getConfigForm()
-        ));
+        return $helper->generateForm([
+            $this->getConfigForm(),
+        ]);
     }
 
-    protected function collectSubmitedInfos() {
-        if (! Tools::isSubmit('submit'))
+    protected function collectSubmitedInfos()
+    {
+        if (!Tools::isSubmit('submit')) {
             return;
+        }
         $configKeys = $this->getConfigKeys();
         array_walk($configKeys, function ($key) {
             Configuration::updateValue($this->getConfigPrefix() . $key, Tools::getValue($key));
         });
     }
 
-    protected function getValues() {
-        $values = array();
+    protected function getValues()
+    {
+        $values = [];
         $configKeys = $this->getConfigKeys();
-        foreach($configKeys as $key) {
+        foreach ($configKeys as $key) {
             $values[$this->getConfigPrefix() . $key] = Configuration::get($this->getConfigPrefix() . $key);
         }
+
         return $values;
     }
 
     protected function getConfigForm()
     {
-        return array(
-            'form' => array(
-                'legend' => array(
-                    'title' => $this->l('Setting info.'),
-                    'icon' => 'icon-envelope'
-                ),
-                'input' => array(
-                    array(
+        return [
+            'form' => [
+                'legend' => [
+                    'title' => $this->trans('Setting info.', [], 'Modules.Scbpayment.Settings'),
+                    'icon' => 'icon-envelope',
+                ],
+                'input' => [
+                    [
                         'type' => 'text',
-                        'label' => 'Channel ID',
+                        'label' => $this->trans('Channel ID', [], 'Modules.Scbpayment.Settings'),
                         'name' => $this->getConfigPrefix() . 'CHANNEL_ID',
-                    ),
-                    array(
+                    ],
+                    [
                         'type' => 'text',
-                        'label' => 'Secret Key',
+                        'label' => $this->trans('Secret Key', [], 'Modules.Scbpayment.Settings'),
                         'name' => $this->getConfigPrefix() . 'CHANNEL_SECRET_KEY',
-                    ),
-                    array(
+                    ],
+                    [
                         'type' => 'switch',
-                        'label' => 'Sandbox Mode',
+                        'label' => $this->trans('Sandbox Mode', [], 'Modules.Scbpayment.Settings'),
                         'name' => $this->getConfigPrefix() . 'SANDBOX_MODE',
                         'is_bool' => true,
                         'desc' => $this->l('Activate "Sandbox Mode"'),
-                        'values' => array(
-                            array(
+                        'values' => [
+                            [
                                 'id' => 'active_on',
                                 'value' => 1,
-                                'label' => $this->l('Activation')
-                            ),
-                            array(
+                                'label' => $this->trans('Activation', [], 'Modules.Scbpayment.Settings'),
+                            ],
+                            [
                                 'id' => 'active_off',
                                 'value' => 0,
-                                'label' => $this->l('Deactivation')
-                            )
-                        )
-                    ),
-                    array(
+                                'label' => $this->trans('Deactivation', [], 'Modules.Scbpayment.Settings'),
+                            ],
+                        ],
+                    ],
+                    [
                         'type' => 'text',
-                        'label' => 'Channel ID',
+                        'label' => $this->trans('Channel ID', [], 'Modules.Scbpayment.Settings'),
                         'name' => $this->getConfigPrefix() . 'SANDBOX_CHANNEL_ID',
-                    ),
-                    array(
+                    ],
+                    [
                         'type' => 'text',
-                        'label' => 'Channel Secret Key',
+                        'label' => $this->trans('Channel Secret Key', [], 'Modules.Scbpayment.Settings'),
                         'name' => $this->getConfigPrefix() . 'SANDBOX_CHANNEL_SECRET_KEY',
-                    ),
-                ),
-                'submit' => array(
-                    'title' => $this->l('save'),
-                )
-            )
-        );
+                    ],
+                ],
+                'submit' => [
+                    'title' => $this->trans('Save', [], 'Modules.Scbpayment.Settings'),
+                ],
+            ],
+        ];
     }
 
     public function hookPaymentOptions($params)
     {
-        try
-        {
-            if (! $this->active || ! $this->isConfigured())
-            {
+        try {
+            if (!$this->active || !$this->isConfigured()) {
                 return false;
             }
 
             $externalOption = new PaymentOption();
-            $externalOption->setCallToActionText($this->l("Pay with {$this->name}"))
-                ->setAction($this->context->link->getModuleLink($this->name, 'request', array(), true))
+            $externalOption->setCallToActionText($this->trans('Pay with %name%', ['%name%' => $this->name], "Modules.{$this->getModuleTranslationDomain()}.Settings"))
+                ->setAction($this->context->link->getModuleLink($this->name, 'request', [], true))
                 ->setLogo(Media::getMediaPath($this->getLogo()));
 
             return [$externalOption];
-        }catch (Exception $lpe)
-        {
+        } catch (Exception $lpe) {
             return false;
         }
     }
 
-    protected function isConfigured(){
+    protected function isConfigured()
+    {
         return (Configuration::get($this->getConfigPrefix() . 'SANDBOX_MODE') && Configuration::get($this->getConfigPrefix() . 'SANDBOX_CHANNEL_ID') && Configuration::get($this->getConfigPrefix() . 'SANDBOX_CHANNEL_SECRET_KEY'))
             || (Configuration::get($this->getConfigPrefix() . 'CHANNEL_ID') && Configuration::get($this->getConfigPrefix() . 'CHANNEL_SECRET_KEY'));
     }
 
-    protected abstract function getLogo();
+    abstract protected function getLogo();
 
-    protected function isModuleActive(){
-        foreach (Module::getPaymentModules() as $module)
-        {
-            if ($module['name'] == $this->name)
-            {
-                return ((int) $module['id_module'] == (int) $this->id);
+    protected function isModuleActive()
+    {
+        foreach (Module::getPaymentModules() as $module) {
+            if ($module['name'] == $this->name) {
+                return (int) $module['id_module'] == (int) $this->id;
             }
         }
+
         return false;
     }
 
-    public abstract function hookPaymentReturn($params);
+    abstract public function hookPaymentReturn($params);
 }
