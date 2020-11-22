@@ -288,20 +288,16 @@ trait ModulePaymentTrait
 
     public function hookPaymentOptions($params)
     {
-        try {
             if (!$this->active || !$this->isConfigured()) {
                 return false;
             }
+    }
 
-            $externalOption = new PaymentOption();
-            $externalOption->setCallToActionText($this->trans('Pay with %name%', ['%name%' => $this->name], "Modules.{$this->getModuleTranslationDomain()}.Settings"))
-                ->setAction($this->context->link->getModuleLink($this->name, 'request', [], true))
-                ->setLogo(Media::getMediaPath($this->getLogo()));
-
-            return [$externalOption];
-        } catch (Exception $lpe) {
-            return false;
-        }
+    protected function setUpPaymentOption(PaymentOption $paymentOption): PaymentOption {
+        $paymentOption->setCallToActionText($this->trans('Pay with %name%', ['%name%' => $this->name], "Modules.{$this->getModuleTranslationDomain()}.Settings"))
+            ->setAction($this->context->link->getModuleLink($this->name, 'request', [], true))
+            ->setLogo(Media::getMediaPath($this->getLogo()));
+        return $paymentOption;
     }
 
     protected function isConfigured()
