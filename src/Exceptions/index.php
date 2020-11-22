@@ -12,56 +12,12 @@
 *
 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 
-namespace CoquardCyrilleFreelance\AbstractPaymentPrestashop\Models;
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
 
-use Db;
-use PrestaShop\PrestaShop\Adapter\Entity\DbQuery;
-use PrestaShop\PrestaShop\Adapter\Entity\ObjectModel;
-
-abstract class AbstractTransaction extends ObjectModel
-{
-    protected static $tableName;
-    protected static $primaryKey;
-    public $id;
-    public $order_id;
-    public $order_ref;
-    public $customer_id;
-    public $trx_id;
-    public $trx_state;
-    public $trx_currency_code;
-    public $total_amount;
-    public $paid_amount;
-    public $shipping_amount;
-    public $date_add;
-    public $date_upd;
-
-    /**
-     * @see ObjectModel::$definition
-     */
-    public static $definition = [];
-
-    public static function getLatestByOrderId($orderId, $orderStateName = null)
-    {
-        $query = new DbQuery();
-        $query->select('*');
-        $query->from(static::$tableName);
-        $query->where('order_id = ' . ((int) $orderId));
-
-        if (!empty($orderStateName)) {
-            $query->where('trx_state = \'' . pSQL($orderStateName) . '\'');
-        }
-
-        return self::createInstance(Db::getInstance()->executeS($query));
-    }
-
-    protected static function createInstance($dataArr)
-    {
-        $instances = [];
-        foreach ($dataArr as $instance) {
-            array_push($instances, new static($instance[static::$primaryKey]));
-        }
-
-        return array_pop($instances);
-    }
-}
+header('Location: ../');
+exit;

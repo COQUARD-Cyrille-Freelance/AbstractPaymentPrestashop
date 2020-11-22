@@ -98,7 +98,7 @@ trait ModulePaymentTrait
      *
      * @return string translation domain from the module
      */
-    abstract protected function getModuleTranslationDomain(): string;
+    abstract public function getModuleTranslationDomain(): string;
 
     protected function createConfigKey()
     {
@@ -291,6 +291,15 @@ trait ModulePaymentTrait
             if (!$this->active || !$this->isConfigured()) {
                 return false;
             }
+        try {
+
+            $externalOption = new PaymentOption();
+
+
+            return [$externalOption];
+        } catch (Exception $lpe) {
+            return false;
+        }
     }
 
     protected function setUpPaymentOption(PaymentOption $paymentOption): PaymentOption {
