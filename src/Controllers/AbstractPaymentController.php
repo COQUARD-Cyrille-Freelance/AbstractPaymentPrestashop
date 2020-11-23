@@ -38,6 +38,10 @@ abstract class AbstractPaymentController extends ModuleFrontController
     protected $transactionStatus;
     protected $transaction;
 
+    protected function getModule(): Module {
+        return $this->module;
+    }
+
     public function callInitContent(AbstractTransaction $transaction, AbstractTransactionService $transactionService, AbstractOrderService $orderService, PaymentProxyInterface $paymentProxy, OrderStatusInterface $orderStatus, TransactionStatusInterface $transactionStatus)
     {
         parent::initContent();
@@ -50,7 +54,7 @@ abstract class AbstractPaymentController extends ModuleFrontController
 
         if (!$this->isActive()) {
             Tools::redirect(Context::getContext()->link->getModuleLink($this->module->name, 'error', [
-                'message' => $this->module->l("Unable to use {$this->module->name} plugin."),
+                'message' => $this->module->trans("Unable to use %name% plugin.", ['%name%' => $this->module->name], "Modules.{$this->module->getModuleTranslationDomain()}.Settings"),
             ], true));
         }
     }
@@ -97,7 +101,7 @@ abstract class AbstractPaymentController extends ModuleFrontController
         $transaction = $this->transactionService->getTransaction($orderId);
         if (!$this->transactionService->verifyTransaction($transaction, $status)) {
             Tools::redirect(Context::getContext()->link->getModuleLink($this->module->name, 'error', [
-                'message' => $this->module->l('Invalid transaction'),
+                'message' => $this->module->trans("Invalid transaction", [], "Modules.{$this->module->getModuleTranslationDomain()}.Error"),
             ], true));
         }
 
@@ -116,7 +120,7 @@ abstract class AbstractPaymentController extends ModuleFrontController
             $order = $this->orderService->getOrder($orderId);
         } catch (Exception $e) {
             Tools::redirect(Context::getContext()->link->getModuleLink($this->module->name, 'error', [
-                'message' => $this->module->l('Cant\'t find the order'),
+                'message' => $this->module->trans("Can't find the order", [], "Modules.{$this->module->getModuleTranslationDomain()}.Error"),
             ], true));
         }
 
@@ -129,7 +133,7 @@ abstract class AbstractPaymentController extends ModuleFrontController
             $currency = $this->orderService->getOrderCurrency($order);
         } catch (AbstractPaymentException $e) {
             Tools::redirect(Context::getContext()->link->getModuleLink($this->module->name, 'error', [
-                'message' => $this->module->l("The currency is not supported by {$this->module->name}."),
+                'message' => $this->module->trans("The currency is not supported by %name%.", ['%name%' => $this->module->name], "Modules.{$this->module->getModuleTranslationDomain()}.Error"),
             ], true));
         }
 

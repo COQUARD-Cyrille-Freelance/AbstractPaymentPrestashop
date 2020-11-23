@@ -254,33 +254,33 @@ trait ModulePaymentTrait
                         'label' => $this->trans('Sandbox Mode', [], 'Modules.Scbpayment.Settings'),
                         'name' => $this->getConfigPrefix() . 'SANDBOX_MODE',
                         'is_bool' => true,
-                        'desc' => $this->l('Activate "Sandbox Mode"'),
+                        'desc' => $this->trans('Activate "Sandbox Mode', [], "Modules.{$this->getModuleTranslationDomain()}.Settings"),
                         'values' => [
                             [
                                 'id' => 'active_on',
                                 'value' => 1,
-                                'label' => $this->trans('Activation', [], 'Modules.Scbpayment.Settings'),
+                                'label' => $this->trans('Activation', [], "Modules.{$this->getModuleTranslationDomain()}.Settings"),
                             ],
                             [
                                 'id' => 'active_off',
                                 'value' => 0,
-                                'label' => $this->trans('Deactivation', [], 'Modules.Scbpayment.Settings'),
+                                'label' => $this->trans('Deactivation', [], "Modules.{$this->getModuleTranslationDomain()}.Settings"),
                             ],
                         ],
                     ],
                     [
                         'type' => 'text',
-                        'label' => $this->trans('Channel ID', [], 'Modules.Scbpayment.Settings'),
+                        'label' => $this->trans('Channel ID', [], "Modules.{$this->getModuleTranslationDomain()}.Settings"),
                         'name' => $this->getConfigPrefix() . 'SANDBOX_CHANNEL_ID',
                     ],
                     [
                         'type' => 'text',
-                        'label' => $this->trans('Channel Secret Key', [], 'Modules.Scbpayment.Settings'),
+                        'label' => $this->trans('Channel Secret Key', [], "Modules.{$this->getModuleTranslationDomain()}.Settings"),
                         'name' => $this->getConfigPrefix() . 'SANDBOX_CHANNEL_SECRET_KEY',
                     ],
                 ],
                 'submit' => [
-                    'title' => $this->trans('Save', [], 'Modules.Scbpayment.Settings'),
+                    'title' => $this->trans('Save', [], "Modules.{$this->getModuleTranslationDomain()}.Settings"),
                 ],
             ],
         ];

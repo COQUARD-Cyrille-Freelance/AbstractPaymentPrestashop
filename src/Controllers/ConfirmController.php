@@ -42,7 +42,7 @@ abstract class ConfirmController extends AbstractPaymentController
             $this->transactionService->changeStatus($transaction, $this->transactionStatus->getFailure());
             $this->orderService->changeStatus($order, $this->orderStatus->getPaymentError());
             Tools::redirect(Context::getContext()->link->getModuleLink($this->module->name, 'error', [
-                'message' => $this->module->l('The payment failed'),
+                'message' => $this->module->trans("The payment failed", [], "Modules.{$this->module->getModuleTranslationDomain()}.Error"),
             ], true));
         }
         if (((float) $amount) === $responseConfirm->getAmount()) {
@@ -57,11 +57,11 @@ abstract class ConfirmController extends AbstractPaymentController
             $this->refund($transaction, $order);
         } catch (AbstractPaymentException $e) {
             Tools::redirect(Context::getContext()->link->getModuleLink($this->module->name, 'error', [
-                'message' => $this->module->l('The payment failed'),
+                'message' => $this->module->trans("The payment failed", [], "Modules.{$this->module->getModuleTranslationDomain()}.Error"),
             ], true));
         }
         Tools::redirect(Context::getContext()->link->getModuleLink($this->module->name, 'error', [
-            'message' => $this->module->l('The payment failed'),
+            'message' => $this->module->trans("The payment failed", [], "Modules.{$this->module->getModuleTranslationDomain()}.Error"),
         ], true));
     }
 
