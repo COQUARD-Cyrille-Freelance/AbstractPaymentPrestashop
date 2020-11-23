@@ -43,7 +43,7 @@ trait ModulePaymentTrait
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
         $this->module_link = $this->context->link->getAdminLink('AdminModules', true) . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
-        $this->confirmUninstall = $this->trans('Are you sure you want to delete your details?', [], 'Modules.Scbpayment.Description');
+        $this->confirmUninstall = $this->getConfirmUninstallMessage();
     }
 
     public function install()
@@ -92,13 +92,6 @@ trait ModulePaymentTrait
             'displayOrderConfirmation',
         ];
     }
-
-    /**
-     * Returns the translation domain from the module
-     *
-     * @return string translation domain from the module
-     */
-    abstract public function getModuleTranslationDomain(): string;
 
     protected function createConfigKey()
     {
@@ -235,56 +228,67 @@ trait ModulePaymentTrait
         return [
             'form' => [
                 'legend' => [
-                    'title' => $this->trans('Setting info.', [], 'Modules.Scbpayment.Settings'),
+                    'title' => $this->getConfigurationMessage(),
                     'icon' => 'icon-envelope',
                 ],
                 'input' => [
                     [
                         'type' => 'text',
-                        'label' => $this->trans('Channel ID', [], 'Modules.Scbpayment.Settings'),
+                        'label' => $this->getChannelIdMessage(),
                         'name' => $this->getConfigPrefix() . 'CHANNEL_ID',
                     ],
                     [
                         'type' => 'text',
-                        'label' => $this->trans('Secret Key', [], 'Modules.Scbpayment.Settings'),
+                        'label' => $this->getChannelSecretMessage(),
                         'name' => $this->getConfigPrefix() . 'CHANNEL_SECRET_KEY',
                     ],
                     [
                         'type' => 'switch',
-                        'label' => $this->trans('Sandbox Mode', [], 'Modules.Scbpayment.Settings'),
+                        'label' => $this->getEnableSandBoxMessage(),
                         'name' => $this->getConfigPrefix() . 'SANDBOX_MODE',
                         'is_bool' => true,
-                        'desc' => $this->trans('Activate "Sandbox Mode', [], "Modules.{$this->getModuleTranslationDomain()}.Settings"),
+                        'desc' => $this->getDescriptionEnableSandBoxMessage(),
                         'values' => [
                             [
                                 'id' => 'active_on',
                                 'value' => 1,
-                                'label' => $this->trans('Activation', [], "Modules.{$this->getModuleTranslationDomain()}.Settings"),
+                                'label' => $this->getActivationMessage(),
                             ],
                             [
                                 'id' => 'active_off',
                                 'value' => 0,
-                                'label' => $this->trans('Deactivation', [], "Modules.{$this->getModuleTranslationDomain()}.Settings"),
+                                'label' => $this->getDeactivationMessage(),
                             ],
                         ],
                     ],
                     [
                         'type' => 'text',
-                        'label' => $this->trans('Channel ID', [], "Modules.{$this->getModuleTranslationDomain()}.Settings"),
+                        'label' => $this->getSandboxChannelIdMessage(),
                         'name' => $this->getConfigPrefix() . 'SANDBOX_CHANNEL_ID',
                     ],
                     [
                         'type' => 'text',
-                        'label' => $this->trans('Channel Secret Key', [], "Modules.{$this->getModuleTranslationDomain()}.Settings"),
+                        'label' => $this->getSandboxChannelSecretMessage(),
                         'name' => $this->getConfigPrefix() . 'SANDBOX_CHANNEL_SECRET_KEY',
                     ],
                 ],
                 'submit' => [
-                    'title' => $this->trans('Save', [], "Modules.{$this->getModuleTranslationDomain()}.Settings"),
+                    'title' => $this->getSaveMessage(),
                 ],
             ],
         ];
     }
+    protected abstract function getConfigurationMessage(): string;
+    protected abstract function getChannelIdMessage(): string;
+    protected abstract function getChannelSecretMessage(): string;
+    protected abstract function getDescriptionEnableSandBoxMessage(): string;
+    protected abstract function getEnableSandBoxMessage(): string;
+    protected abstract function getActivationMessage(): string;
+    protected abstract function getDeactivationMessage(): string;
+    protected abstract function getSandboxChannelIdMessage(): string;
+    protected abstract function getSandboxChannelSecretMessage(): string;
+    protected abstract function getConfirmUninstallMessage(): string;
+    protected abstract function getSaveMessage(): string;
 
     public function hookPaymentOptions($params)
     {
@@ -303,7 +307,7 @@ trait ModulePaymentTrait
     }
 
     protected function setUpPaymentOption(PaymentOption $paymentOption): PaymentOption {
-        $paymentOption->setCallToActionText($this->trans('Pay with %name%', ['%name%' => $this->name], "Modules.{$this->getModuleTranslationDomain()}.Settings"))
+        $paymentOption
             ->setAction($this->context->link->getModuleLink($this->name, 'request', [], true))
             ->setLogo(Media::getMediaPath($this->getLogo()));
         return $paymentOption;

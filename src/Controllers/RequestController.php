@@ -36,7 +36,7 @@ abstract class RequestController extends AbstractPaymentController
             $order = $this->orderService->createOrder($cart);
         } catch (AbstractPaymentException $e) {
             Tools::redirect(Context::getContext()->link->getModuleLink($this->module->name, 'error', [
-                'message' => $this->module->trans("The cart is empty", [], "Modules.{$this->module->getModuleTranslationDomain()}.Error"),
+                'message' => $this->getEmptyCartMessage(),
             ], true));
         }
         $currency = $this->getOrderCurrency($order);
@@ -46,7 +46,7 @@ abstract class RequestController extends AbstractPaymentController
         } catch (AbstractPaymentException $exception) {
             $this->orderService->changeStatus($order, Configuration::get($this->orderStatus->getPaymentError()));
             Tools::redirect(Context::getContext()->link->getModuleLink($this->module->name, 'error', [
-                'message' => $this->module->trans("The payment failed", [], "Modules.{$this->module->getModuleTranslationDomain()}.Error"),
+                'message' => $this->getPaymentFailedMessage(),
             ], true));
         }
         $amount = $this->orderService->getAmount($order, $currency);
